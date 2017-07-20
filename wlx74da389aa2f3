@@ -1,0 +1,5 @@
+auto wlx74da389aa2f3
+iface wlx74da389aa2f3 inet static
+    address 192.168.1.5
+    netmask 255.255.255.0
+    gateway 192.168.1.1
