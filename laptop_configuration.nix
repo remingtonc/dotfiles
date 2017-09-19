@@ -1,38 +1,75 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# NixOS Configuration file for Laptop
 
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  # Hardware Configuration
+  imports = [ ./hardware-configuration.nix ];
+  ## Audio
+  hardware.pulseaudio = {
+    enable = true;
+    support32Bit = true;
+    package = pkgs.pulseaudioFull;
+  };
+  ## Graphics
+  hardware.opengl.driSupport32Bit = true; # Games?
+  ## Bluetooth
+  hardware.bluetooth.enable = true;
+  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ]; # SSD
 
-  # Optimize for SSD
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
+  # System Configuration
+  system.stateVersion = "17.03";
+  system.autoUpgrade.enable = true;
+  time.timeZone = "America/Los_Angeles";
+  services.nixosManual.showManual = true;
 
-  # Use the systemd-boot EFI boot loader.
+  # Boot Configuration
+  ## Not GRUB!
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  boot.loader.grub.device = "nodev";
-  boot.loader.grub.efiSupport = true;
-
-  networking.hostName = "Odin"; # Define your hostname.
-
-  # Select internationalisation properties.
-  i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
+  
+  # User Configuration
+  users.extraUsers.remingtonc = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "disk" "video" "networkmanager" "systemd-journal" "audio" "docker" ];
   };
 
-  # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
+  # Networking Configuration
+  networking.hostName = "Odin";
+  ## Connectivity
+  networking.enableIPv6 = false;
+  networking.nameservers = [ "208.67.222.222" "208.67.220.220"];
+  networking.firewall.allowPing = true;
+  networking.networkmanager.enable = true;
+  ## Firewall
+  networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [ 20 21 22 25 ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  ## Virtualized networking
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = [ "ve-+" ];
+  networking.nat.externalInterface = "wlp1s0";
+  
+  # Manageability Configuration
+  services.openssh.enable = true;
+  
+  # Services Configuration
+  ## CUPS
+  services.printing.enable = true;
+  ## X11
+  services.xserver.enable = true;
+  services.xserver.layout = "us";
+  ## Trackpad
+  services.xserver.synaptics.enable = true;
+  services.xserver.synaptics.twoFingerScroll = true;
+  ## DE
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.desktopManager.plasma5.enable = true;
+  ## System
+  services.acpid.enable = true;
 
+  # Packages
+  nixpkgs.config.allowUnfree = true; # Required for Spotify :)
   environment.systemPackages = with pkgs; [
     wget
     firefox
@@ -55,54 +92,4 @@
     atom
     docker
   ];
-
-  services.openssh.enable = true;
-
-  networking.firewall.allowedTCPPorts = [ 20 21 22 25 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  networking.firewall.enable = true;
-  networking.enableIPv6 = false;
-  networking.nameservers = [ "208.67.222.222" "208.67.220.220"];
-  networking.firewall.allowPing = true;
-  hardware.bluetooth.enable = true;
-  networking.networkmanager.enable = true;
-  networking.nat.enable = true;
-  networking.nat.internalInterfaces = [ "ve-+" ];
-  networking.nat.externalInterface = "wlp1s0";
-
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  services.xserver.synaptics.enable = true;
-  services.xserver.synaptics.twoFingerScroll = true;
-
-  # Enable the KDE Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-
-  # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "17.03";
-
-  services.nixosManual.showManual = true;
-
-  hardware.opengl.driSupport32Bit = true;
-  services.acpid.enable = true;
-  users.extraUsers.remingtonc = {
-    isNormalUser = true;
-    createHome = true;
-    home = "/home/remingtonc";
-    uid = 1000;
-    extraGroups = [ "wheel" "disk" "video" "networkmanager" 
-"systemd-journal" "audio" "docker" ];
-  };
-  hardware.pulseaudio = {
-    enable = true;
-    support32Bit = true;
-    package = pkgs.pulseaudioFull;
-  };
-  nixpkgs.config.allowUnfree = true;
 }
