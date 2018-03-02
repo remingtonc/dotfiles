@@ -18,7 +18,7 @@
   fileSystems."/".options = [ "noatime" "nodiratime" "discard" ]; # SSD
 
   # System Configuration
-  system.stateVersion = "17.03";
+  system.stateVersion = "17.09";
   system.autoUpgrade.enable = true;
   time.timeZone = "America/Los_Angeles";
   services.nixosManual.showManual = true;
@@ -69,16 +69,27 @@
   services.acpid.enable = true;
 
   # Packages
+  ## No idea what I'm doing with these settings
+  programs.fish.enable = true;
+  programs.mosh.enable = true;
+  programs.tmux.enable = true;
+  programs.ssh.enable = true;
+  programs.nano.enable = true;
+  programs.vim.enable = true;
+  programs.man.enable = true;
+  ## Actually request packages now
   nixpkgs.config.allowUnfree = true; # Required for Spotify :)
   environment.systemPackages = with pkgs; [
-    wget
+    docker
+    spotify
+    vlc
     firefox
-    gcc
-    go
-    sqlite
-    valgrind
-    cmake
-    bind
+    vscode
+    alacritty
+    tmux
+    bash
+    fish
+    mosh
     git
     htop
     iftop
@@ -87,9 +98,9 @@
     tcpdump
     unzip
     which
-    spotify
-    vlc
-    atom
-    docker
+    wget
+    curl
+    bind
+    dig
   ];
 }
