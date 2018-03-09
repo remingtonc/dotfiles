@@ -24,8 +24,9 @@
     }
   ];
   fileSystems."/" = {
-    device = "/dev/disk/by-label/root";
-    fsType = "ext4";
+    # This is automatically declared in hardware-configuration.nix
+    # device = "/dev/disk/by-label/root";
+    # fsType = "ext4";
     options = [ "noatime" "nodiratime" "discard" ]; # SSD
   };
   fileSystems."/home/" = {
