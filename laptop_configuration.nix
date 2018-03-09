@@ -90,16 +90,16 @@
   services.xserver = {
     enable = true;
     layout = "us";
+    autorun = true;
+    videoDrivers = [ "intel" ];
     ### Trackpad
     synaptics = {
       enable = true;
       twoFingerScroll = true;
     };
     ### DE
-    displayManager = {
-      sddm.enable = true;
-      plasma5.enable = true;
-    };
+    desktopManager.plasma5.enable = true;
+    displayManager.sddm.enable = true;
   };
   ## System
   services.acpid.enable = true;
