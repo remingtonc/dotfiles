@@ -1,36 +1,37 @@
-# NixOS Configuration file for Laptop
-
-{ config, pkgs, ... }:
-
-{
-  # Hardware Configuration
-  imports = [ ./hardware-configuration.nix ];
-  hardware = {
-    ## Audio
-    pulseaudio = {
-      enable = true;
-      package = pkgs.pulseaudioFull;
-    };
-    ## Bluetooth
-    bluetooth.enable = true;
-  };
-
-  # Filesystems
-  boot.initrd.luks.devices = [
-    {
-      name = "systempv";
-      device = "/dev/disk/by-uuid/64d7cea3-9308-4198-919e-f980f499b7b1";
-      preLVM = true;
-    }
-  ];
-  fileSystems."/" = {
-    # This is automatically declared in hardware-configuration.nix
-    # device = "/dev/disk/by-label/root";
-    # fsType = "ext4";
-    options = [ "noatime" "nodiratime" "discard" ]; # SSD
-  };
-  fileSystems."/home/" = {
-    device = "/dev/disk/by-label/user";
+# NixOS Configuration file for Laptop                                                                                                                                                                                                        
+                                                                                                                                                                                                                                             
+{ config, pkgs, ... }:                                                                                                                                                                                                                       
+                                                                                                                                                                                                                                             
+{                                                                                                                                                                                                                                            
+  # Hardware Configuration                                                                                                                                                                                                                   
+  imports = [ ./hardware-configuration.nix ];                                                                                                                                                                                                
+  hardware = {                                                                                                                                                                                                                               
+    ## Audio                                                                                                                                                                                                                                 
+    pulseaudio = {                                                                                                                                                                                                                           
+      enable = true;                                                                                                                                                                                                                         
+      package = pkgs.pulseaudioFull;                                                                                                                                                                                                         
+    };                                                                                                                                                                                                                                       
+    ## Bluetooth                                                                                                                                                                                                                             
+    bluetooth.enable = true;                                                                                                                                                                                                                 
+  };                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                             
+  # Filesystems                                                                                                                                                                                                                              
+  boot.initrd.luks.devices = [                                                                                                                                                                                                               
+    {                                                                                                                                                                                                                                        
+      name = "systempv";                                                                                                                                                                                                                     
+      device =                                                                                                                                                                                                                               
+"/dev/disk/by-uuid/64d7cea3-9308-4198-919e-f980f499b7b1";                                                                                                                                                                                    
+      preLVM = true;                                                                                                                                                                                                                         
+    }                                                                                                                                                                                                                                        
+  ];                                                                                                                                                                                                                                         
+  fileSystems."/" = {                                                                                                                                                                                                                        
+    # This is automatically declared in hardware-configuration.nix                                                                                                                                                                           
+    # device = "/dev/disk/by-label/root";                                                                                                                                                                                                    
+    # fsType = "ext4";                                                                                                                                                                                                                       
+    options = [ "noatime" "nodiratime" "discard" ]; # SSD                                                                                                                                                                                    
+  };                                                                                                                                                                                                                                         
+  fileSystems."/home/" = {                                                                                                                                                                                                                   
+    device = "/dev/disk/by-label/user";                                                                                                                                                                                                      
     fsType = "ext4";
     options = [ "noatime" "nodiratime" "discard" ]; # SSD
   };
@@ -52,9 +53,9 @@
   users.extraUsers.remingtonc = {
     isNormalUser = true;
     uid = 1000;
-    gid = 1000;
     group = "remingtonc";
-    extraGroups = [ "wheel" "disk" "video" "networkmanager" "systemd-journal" "audio" "docker" ];
+    extraGroups = [ "wheel" "disk" "video" "networkmanager" 
+"systemd-journal" "audio" "docker" ];
     createHome = true;
     shell = "/run/current-system/sw/bin/fish";
   };
@@ -111,9 +112,6 @@
     fish.enable = true;
     mosh.enable = true;
     tmux.enable = true;
-    ssh.enable = true;
-    nano.enable = true;
-    vim.enable = true;
     man.enable = true;
   };
   ## Actually request packages now
@@ -137,6 +135,5 @@
     wget
     curl
     bind
-    dig
   ];
 }
