@@ -13,7 +13,7 @@
     };
     ## Bluetooth
     bluetooth.enable = true;
-  }
+  };
 
   # Filesystems
   boot.initrd.luks.devices = [
@@ -32,7 +32,7 @@
     device = "/dev/disk/by-label/user";
     fsType = "ext4";
     options = [ "noatime" "nodiratime" "discard" ]; # SSD
-  }
+  };
 
   # System Configuration
   system.stateVersion = "17.09";
