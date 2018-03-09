@@ -52,7 +52,7 @@
     isNormalUser = true;
     uid = 1000;
     gid = 1000;
-    group = remingtonc;
+    group = "remingtonc";
     extraGroups = [ "wheel" "disk" "video" "networkmanager" "systemd-journal" "audio" "docker" ];
     createHome = true;
     shell = "/run/current-system/sw/bin/fish";
