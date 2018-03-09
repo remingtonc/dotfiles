@@ -16,7 +16,23 @@
   }
 
   # Filesystems
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ]; # SSD
+  boot.initrd.luks.devices = [
+    {
+      name = "systempv";
+      device = "/dev/disk/by-uuid/64d7cea3-9308-4198-919e-f980f499b7b1";
+      preLVM = true;
+    }
+  ];
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/root";
+    fsType = "ext4";
+    options = [ "noatime" "nodiratime" "discard" ]; # SSD
+  };
+  fileSystems."/home/" = {
+    device = "/dev/disk/by-label/user";
+    fsType = "ext4";
+    options = [ "noatime" "nodiratime" "discard" ]; # SSD
+  }
 
   # System Configuration
   system.stateVersion = "17.09";
@@ -35,6 +51,7 @@
   users.extraUsers.remingtonc = {
     isNormalUser = true;
     uid = 1000;
+    gid = 1000;
     group = remingtonc;
     extraGroups = [ "wheel" "disk" "video" "networkmanager" "systemd-journal" "audio" "docker" ];
     createHome = true;
