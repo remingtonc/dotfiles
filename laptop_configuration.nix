@@ -5,16 +5,17 @@
 {
   # Hardware Configuration
   imports = [ ./hardware-configuration.nix ];
-  ## Audio
-  hardware.pulseaudio = {
-    enable = true;
-    support32Bit = true;
-    package = pkgs.pulseaudioFull;
-  };
-  ## Graphics
-  hardware.opengl.driSupport32Bit = true; # Games?
-  ## Bluetooth
-  hardware.bluetooth.enable = true;
+  hardware = {
+    ## Audio
+    pulseaudio = {
+      enable = true;
+      package = pkgs.pulseaudioFull;
+    };
+    ## Bluetooth
+    bluetooth.enable = true;
+  }
+
+  # Filesystems
   fileSystems."/".options = [ "noatime" "nodiratime" "discard" ]; # SSD
 
   # System Configuration
@@ -25,30 +26,42 @@
 
   # Boot Configuration
   ## Not GRUB!
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  }
   
   # User Configuration
   users.extraUsers.remingtonc = {
     isNormalUser = true;
+    uid = 1000;
+    group = remingtonc;
     extraGroups = [ "wheel" "disk" "video" "networkmanager" "systemd-journal" "audio" "docker" ];
+    createHome = true;
+    shell = "/run/current-system/sw/bin/fish";
   };
 
   # Networking Configuration
-  networking.hostName = "Odin";
-  ## Connectivity
-  networking.enableIPv6 = false;
-  networking.nameservers = [ "208.67.222.222" "208.67.220.220"];
-  networking.firewall.allowPing = true;
-  networking.networkmanager.enable = true;
-  ## Firewall
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 20 21 22 25 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  ## Virtualized networking
-  networking.nat.enable = true;
-  networking.nat.internalInterfaces = [ "ve-+" ];
-  networking.nat.externalInterface = "wlp1s0";
+  networking = {
+    hostName = "Odin";
+    networkmanager.enable = true;
+    ## Connectivity
+    enableIPv6 = false;
+    nameservers = [ "208.67.222.222" "208.67.220.220" ];
+    ## Firewall
+    firewall = {
+      enable = true;
+      allowPing = true;
+      allowedTCPPorts = [ 20 21 22 25 ];
+      # allowedUDPPorts = [ ... ];
+    }
+    ## Virtualized Networking
+    nat = {
+      enable = true;
+      internalInterfaces = [ "ve-+" ];
+      externalInterface = "wlp1s0";
+    }
+  }
   
   # Manageability Configuration
   services.openssh.enable = true;
@@ -57,26 +70,34 @@
   ## CUPS
   services.printing.enable = true;
   ## X11
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  ## Trackpad
-  services.xserver.synaptics.enable = true;
-  services.xserver.synaptics.twoFingerScroll = true;
-  ## DE
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver = {
+    enable = true;
+    layout = "us";
+    ### Trackpad
+    synaptics = {
+      enable = true;
+      twoFingerScroll = true;
+    };
+    ### DE
+    displayManager = {
+      sddm.enable = true;
+      plasma5.enable = true;
+    }
+  }
   ## System
   services.acpid.enable = true;
 
   # Packages
   ## No idea what I'm doing with these settings
-  programs.fish.enable = true;
-  programs.mosh.enable = true;
-  programs.tmux.enable = true;
-  programs.ssh.enable = true;
-  programs.nano.enable = true;
-  programs.vim.enable = true;
-  programs.man.enable = true;
+  programs = {
+    fish.enable = true;
+    mosh.enable = true;
+    tmux.enable = true;
+    ssh.enable = true;
+    nano.enable = true;
+    vim.enable = true;
+    man.enable = true;
+  }
   ## Actually request packages now
   nixpkgs.config.allowUnfree = true; # Required for Spotify :)
   environment.systemPackages = with pkgs; [
@@ -86,10 +107,7 @@
     firefox
     vscode
     alacritty
-    tmux
     bash
-    fish
-    mosh
     git
     htop
     iftop
