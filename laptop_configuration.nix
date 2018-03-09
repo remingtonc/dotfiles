@@ -29,7 +29,7 @@
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
-  }
+  };
   
   # User Configuration
   users.extraUsers.remingtonc = {
@@ -54,14 +54,14 @@
       allowPing = true;
       allowedTCPPorts = [ 20 21 22 25 ];
       # allowedUDPPorts = [ ... ];
-    }
+    };
     ## Virtualized Networking
     nat = {
       enable = true;
       internalInterfaces = [ "ve-+" ];
       externalInterface = "wlp1s0";
-    }
-  }
+    };
+  };
   
   # Manageability Configuration
   services.openssh.enable = true;
@@ -82,8 +82,8 @@
     displayManager = {
       sddm.enable = true;
       plasma5.enable = true;
-    }
-  }
+    };
+  };
   ## System
   services.acpid.enable = true;
 
@@ -97,7 +97,7 @@
     nano.enable = true;
     vim.enable = true;
     man.enable = true;
-  }
+  };
   ## Actually request packages now
   nixpkgs.config.allowUnfree = true; # Required for Spotify :)
   environment.systemPackages = with pkgs; [
