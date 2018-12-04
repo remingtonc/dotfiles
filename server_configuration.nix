@@ -18,7 +18,7 @@
   ## Not GRUB!
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = [ "zfs" ];
+  boot.supportedFilesystems = [ "ext4" "zfs" ];
   
   # User Configuration
   users.extraUsers.remingtonc = {
@@ -28,22 +28,12 @@
 
   # Networking Configuration
   networking.hostName = "Valhalla";
+  networking.hostId = "e4ec3c0f";
   ## Connectivity
-  ### A wireless server?!
-  networking.wireless.enable = true;
-  networking.wireless.networks = {
-    "5G is for the Boys" = {
-      priority = 1;
-      psk = "CHANGE ME";
-    };
-    "Prestige Worldwide" = {
-      psk = "CHANGE ME";
-    };
-  };
   networking.enableIPv6 = false;
   networking.defaultGateway = "192.168.1.1";
   networking.nameservers = [ "208.67.222.222" "208.67.220.220"];
-  networking.interfaces.wlx74da389aa2f3.ip4 = [ { address = "192.168.1.5"; prefixLength = 24; } ];
+  networking.interfaces.enp0s3.ip4 = [ { address = "192.168.1.5"; prefixLength = 24; } ];
   ## Firewall
   networking.firewall.enable = true;
   networking.firewall.allowPing = true;
@@ -52,7 +42,7 @@
   ## Virtualized networking
   networking.nat.enable = true;
   networking.nat.internalInterfaces = [ "ve-+" ];
-  networking.nat.externalInterface = "wlx74da389aa2f3";
+  networking.nat.externalInterface = "enp0s3";
   
   # Manageability Configuration
   services.openssh.enable = true;
