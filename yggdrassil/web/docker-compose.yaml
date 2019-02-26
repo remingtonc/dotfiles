@@ -1,0 +1,57 @@
+version: '3'
+
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    env_file:
+      - nextcloud/db.env
+    networks:
+      - backend
+
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - backend
+
+  nextcloud:
+    image: nextcloud:fpm-alpine
+    restart: always
+    volumes:
+      - type: bind
+        source: /datalake/nextcloud
+        target: /var/www/html
+    env_file:
+      - nextcloud/db.env
+      - nextcloud/app.env
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - backend
+
+  nginx:
+    build: ./nginx
+    restart: always
+    volumes:
+      - type: bind
+        source: /datalake/nextcloud
+        target: /var/www/nextcloud
+        mode: ro
+    depends_on:
+      - nextcloud
+    networks:
+      - backend
+      - default
+
+volumes:
+  db:
+
+networks:
+  backend:
