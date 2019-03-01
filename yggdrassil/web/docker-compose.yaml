@@ -1,27 +1,26 @@
 version: '3'
 
-version: '3'
-
 services:
   mariadb:
     image: mariadb
+    container_name: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
       - db:/var/lib/mysql
-    env_file:
-      - nextcloud/db.env
     networks:
-      - backend
+      - db
 
   redis:
     image: redis:alpine
+    container_name: redis
     restart: always
     networks:
-      - backend
+      - nextcloud
 
   nextcloud:
     image: nextcloud:fpm-alpine
+    container_name: nextcloud
     restart: always
     volumes:
       - type: bind
@@ -29,12 +28,30 @@ services:
         target: /var/www/html
     env_file:
       - nextcloud/db.env
-      - nextcloud/app.env
+      - nextcloud/nextcloud.env
     depends_on:
       - mariadb
       - redis
     networks:
-      - backend
+      - nextcloud
+      - db
+
+  ghost:
+    image: ghost:alpine
+    container_name: ghost
+    volumes:
+      - type: bind
+        source: /datalake/ghost
+        target: /var/lib/ghost
+    env_file:
+      - ghost/ghost.env
+      - ghost/db.env
+    depends_on:
+      - mariadb
+    restart: always
+    networks:
+      - ghost
+      - db
 
   nginx:
     build: ./nginx
@@ -43,15 +60,36 @@ services:
       - type: bind
         source: /datalake/nextcloud
         target: /var/www/nextcloud
-        mode: ro
+        read_only: true
+      - type: bind
+        source: /datalake/ghost/content
+        target: /var/www/ghost
+        read_only: true
+      - "goaccess_reports:/srv/goaccess:ro"
+      - "nginx_logs:/var/log/nginx"
     depends_on:
       - nextcloud
+      - ghost
     networks:
-      - backend
+      - ghost
+      - nextcloud
       - default
+
+  goaccess:
+    build: ./goaccess
+    restart: always
+    depends_on:
+      - nginx
+    volumes:
+      - "nginx_logs:/srv/logs:ro"
+      - "goaccess_reports:/srv/report"
 
 volumes:
   db:
+  nginx_logs:
+  goaccess_reports:
 
 networks:
-  backend:
+  nextcloud:
+  ghost:
+  db:
