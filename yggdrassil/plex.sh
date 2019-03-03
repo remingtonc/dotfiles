@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 PLEX_TZ=America/Los_Angeles
-PLEX_CLAIM=
+PLEX_CLAIM=${PLEX_CLAIM}
 
 docker run \
     -d \
+    --restart unless-stopped \
     --name plex \
     --network=host \
     -e TZ="${PLEX_TZ}" \

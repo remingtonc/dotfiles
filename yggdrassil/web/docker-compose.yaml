@@ -1,13 +1,15 @@
-version: '3'
+version: "3.7"
 
 services:
   mariadb:
-    image: mariadb
+    build: ./mariadb
     container_name: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
+    env_file:
+      - mariadb/db.env
     volumes:
-      - db:/var/lib/mysql
+      - "db:/var/lib/mysql"
     networks:
       - db
 
@@ -42,7 +44,7 @@ services:
     volumes:
       - type: bind
         source: /datalake/ghost
-        target: /var/lib/ghost
+        target: /var/lib/ghost/content
     env_file:
       - ghost/ghost.env
       - ghost/db.env
@@ -55,18 +57,27 @@ services:
 
   nginx:
     build: ./nginx
+    container_name: nginx
     restart: always
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - type: bind
         source: /datalake/nextcloud
         target: /var/www/nextcloud
         read_only: true
       - type: bind
-        source: /datalake/ghost/content
+        source: /datalake/ghost
         target: /var/www/ghost
         read_only: true
       - "goaccess_reports:/srv/goaccess:ro"
       - "nginx_logs:/var/log/nginx"
+    secrets:
+      - source: ssl_cert
+        target: remington_io.chain.crt
+      - source: ssl_key
+        target: remington_io.key
     depends_on:
       - nextcloud
       - ghost
@@ -77,12 +88,19 @@ services:
 
   goaccess:
     build: ./goaccess
+    container_name: goaccess
     restart: always
     depends_on:
       - nginx
     volumes:
       - "nginx_logs:/srv/logs:ro"
       - "goaccess_reports:/srv/report"
+
+secrets:
+  ssl_cert:
+    file: ./nginx/certs/remington_io.chain.crt
+  ssl_key:
+    file: ./nginx/certs/remington_io.key
 
 volumes:
   db:
