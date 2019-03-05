@@ -42,4 +42,5 @@ envsubst < mariadb/conf.d/ghost.sql.template > mariadb/conf.d/ghost.sql
 envsubst < mariadb/conf.d/nextcloud.sql.template > mariadb/conf.d/nextcloud.sql
 
 echo "Bringing up environment."
+docker-compose build
 docker-compose up -d
