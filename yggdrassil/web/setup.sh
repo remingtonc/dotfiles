@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+export DDNS_PASSWORD=${DDNS_PASSWORD}
+
+envsubst < ddclient/ddclient.conf.template > ddclient/ddclient.conf
+
 if [ -e nginx/certs/remington_io.chain.crt ]; then
     echo "remington.io SSL certificate exists, proceeding."
 else

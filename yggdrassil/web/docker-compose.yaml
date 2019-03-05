@@ -96,6 +96,11 @@ services:
       - "nginx_logs:/srv/logs:ro"
       - "goaccess_reports:/srv/report"
 
+  ddclient:
+    build: ./ddclient
+    container_name: ddclient
+    restart: unless-stopped
+
 secrets:
   ssl_cert:
     file: ./nginx/certs/remington_io.chain.crt

@@ -1,0 +1,11 @@
+daemon=300
+syslog=yes
+pid=/var/run/ddclient/ddclient.pid
+ssl=yes
+
+use=web, web=dynamicdns.park-your-domain.com/getip
+protocol=namecheap, \
+server=dynamicdns.park-your-domain.com, \
+login=remington.io, \
+password=${DDNS_PASSWORD} \
+@, nextcloud
