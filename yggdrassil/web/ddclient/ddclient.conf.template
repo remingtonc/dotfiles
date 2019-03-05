@@ -2,6 +2,7 @@ daemon=300
 syslog=yes
 pid=/var/run/ddclient/ddclient.pid
 ssl=yes
+cache=/tmp/ddclient.cache
 
 use=web, web=dynamicdns.park-your-domain.com/getip
 protocol=namecheap, \
