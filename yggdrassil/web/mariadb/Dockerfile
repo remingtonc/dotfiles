@@ -1,2 +1,2 @@
 FROM mariadb
-COPY conf.d/ /etc/mysql/conf.d
+COPY conf.d/*.sql /docker-entrypoint-initdb.d
