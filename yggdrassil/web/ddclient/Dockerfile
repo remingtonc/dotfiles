@@ -1,2 +1,2 @@
-FROM linuxserver:ddclient
+FROM linuxserver/ddclient
 COPY ddclient.conf /config/ddclient.conf
