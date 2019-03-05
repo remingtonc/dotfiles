@@ -1,2 +1,3 @@
 db.env
 mariadb/conf.d/*.sql
+ddclient.conf
