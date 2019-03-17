@@ -74,10 +74,14 @@ services:
       - "goaccess_reports:/srv/goaccess:ro"
       - "nginx_logs:/var/log/nginx"
     secrets:
-      - source: ssl_cert
+      - source: remington_io_crt
         target: remington_io.chain.crt
-      - source: ssl_key
+      - source: remington_io_key
         target: remington_io.key
+      - source: nextcloud_remington_io_crt
+        target: nextcloud_remington_io.chain.crt
+      - source: nextcloud_remington_io_key
+        target: nextcloud_remington_io.key
     depends_on:
       - nextcloud
       - ghost
@@ -102,10 +106,14 @@ services:
     restart: unless-stopped
 
 secrets:
-  ssl_cert:
+  remington_io_crt:
     file: ./nginx/certs/remington_io.chain.crt
-  ssl_key:
+  remington_io_key:
     file: ./nginx/certs/remington_io.key
+  nextcloud_remington_io_crt:
+    file: ./nginx/certs/nextcloud_remington_io.chain.crt
+  nextcloud_remington_io_key:
+    file: ./nginx/certs/nextcloud_remington_io.key
 
 volumes:
   db:
