@@ -1,0 +1,126 @@
+version: "3.7"
+
+services:
+  mariadb:
+    build: ./mariadb
+    container_name: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    env_file:
+      - mariadb/db.env
+    volumes:
+      - "db:/var/lib/mysql"
+    networks:
+      - db
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    networks:
+      - nextcloud
+
+  nextcloud:
+    image: nextcloud:fpm-alpine
+    container_name: nextcloud
+    restart: always
+    volumes:
+      - type: bind
+        source: /datalake/nextcloud
+        target: /var/www/html
+    env_file:
+      - nextcloud/db.env
+      - nextcloud/nextcloud.env
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - nextcloud
+      - db
+
+  ghost:
+    image: ghost:alpine
+    container_name: ghost
+    volumes:
+      - type: bind
+        source: /datalake/ghost
+        target: /var/lib/ghost/content
+    env_file:
+      - ghost/ghost.env
+      - ghost/db.env
+    depends_on:
+      - mariadb
+    restart: always
+    networks:
+      - ghost
+      - db
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: /datalake/nextcloud
+        target: /var/www/nextcloud
+        read_only: true
+      - type: bind
+        source: /datalake/ghost
+        target: /var/www/ghost
+        read_only: true
+      - "goaccess_reports:/srv/goaccess:ro"
+      - "nginx_logs:/var/log/nginx"
+    secrets:
+      - source: remington_io_crt
+        target: remington_io.chain.crt
+      - source: remington_io_key
+        target: remington_io.key
+      - source: nextcloud_remington_io_crt
+        target: nextcloud_remington_io.chain.crt
+      - source: nextcloud_remington_io_key
+        target: nextcloud_remington_io.key
+    depends_on:
+      - nextcloud
+      - ghost
+    networks:
+      - ghost
+      - nextcloud
+      - default
+
+  goaccess:
+    build: ./goaccess
+    container_name: goaccess
+    restart: always
+    depends_on:
+      - nginx
+    volumes:
+      - "nginx_logs:/srv/logs:ro"
+      - "goaccess_reports:/srv/report"
+
+  ddclient:
+    build: ./ddclient
+    container_name: ddclient
+    restart: unless-stopped
+
+secrets:
+  remington_io_crt:
+    file: ./nginx/certs/remington_io.chain.crt
+  remington_io_key:
+    file: ./nginx/certs/remington_io.key
+  nextcloud_remington_io_crt:
+    file: ./nginx/certs/nextcloud_remington_io.chain.crt
+  nextcloud_remington_io_key:
+    file: ./nginx/certs/nextcloud_remington_io.key
+
+volumes:
+  db:
+  nginx_logs:
+  goaccess_reports:
+
+networks:
+  nextcloud:
+  ghost:
+  db:
