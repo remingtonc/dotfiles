@@ -19,3 +19,10 @@ spec:
         name: server-sadness
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: server-sadness-configmap
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: server-sadness-configmap
+        configMap:
+          name: server-sadness-configmap
